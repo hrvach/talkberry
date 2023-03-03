@@ -72,7 +72,7 @@ Many Linux distros have Codec2 packaged, so you can easily install it (_apt inst
 3. xxd -i coded_data.bin > /project/rootdir/header/data.h
 ```
 
-This requires sox, codec2 and xxd to be available.
+This requires sox, codec2 and xxd to be installed.
 
 ## Notes On Performance Optimisation
 
@@ -120,7 +120,7 @@ $$ z_{0}=\alpha_{0} \cdot max(|re|, |im|) + \beta_{0} \cdot min(|re|, |im|) $$
 
 $$ z_{1}=\alpha_{1} \cdot max(|re|, |im|) + \beta_{1} \cdot min(|re|, |im|) $$
 
-where α₀=1, β₀=5/32, α₁=27/32, β₁=71/128 and the error does not exceed 1.22%
+where α₀=1, β₀=5/32, α₁=27/32, β₁=71/128.
 
 - Instead of calculating the geometric mean using square roots for energy interpolation, we use a simple linear interpolation. Although this approach does not represent a mathematically accurate problem solution, it provides a fast and acceptable approximation.
 
@@ -147,6 +147,15 @@ A: It's very cheap, efficient, available to order (a big factor nowadays) and ex
 **Q: Can this work on RPi?**
 
 A: Yes, I tried it on RPi 4 and it runs just fine. However, having a FPU and things like NEON SIMD instruction set makes floating point a better choice. If you're building for the RPi and expect performance, consider linking against the full CMSIS library which has different FFT implementation for CPUs with more advanced instruction sets.
+
+**Q: I'm getting linker error, there is not enough RAM**
+
+A: xxd generates the data array as _unsigned char_ so it's not kept in flash. Add "const" in front of it or declare it like this:
+```
+#include <pico/platform.h>
+
+const unsigned char __in_flash() coded_data [] = {
+```
 
 ## Issues
 
